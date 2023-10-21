@@ -61,14 +61,101 @@ res.json({
 })
 })
 
-app.get('/delproduct' ,async(req,res)=>{
-    const {name} = req.query
-    const delteproduct = Ecommers.deleteOne({name:name})
+// delete 
+
+app.delete('/product/:_id' ,async(req,res)=>{
+    const {_id} = req.params
+    const deltedproduct = await Ecommers.deleteOne({_id:_id})
     res.json({
-        data:"product data delete succesfully"
+        data:`this deleted succesfully ${_id}`
     })
+})
+
+
+// put
+app.put('/productput/:_id' ,async(req,res)=>{
+    const {_id} = req.params
+    const {name,description, price, brand, productimg} = req.body 
+
+    if(!name) {
+     return   res.json({
+            message:"name is requred"
+        })
+    }
+
+    if(!description) {
+        return   res.json({
+               message:"name is requred"
+           })
+       }
+
+       if(!price) {
+        return   res.json({
+               message:"name is requred"
+           })
+       }
+
+       if(!brand) {
+        return   res.json({
+               message:"name is requred"
+           })
+       }
+       if(!productimg) {
+        return   res.json({
+               message:"name is requred"
+           })
+       }
+
+    await Ecommers.updateOne({_id:_id} ,{$set:{
+        name:name,
+        description:description,
+        price:price,
+        brand:brand,
+        productimg:productimg
+    }})
+
+    const updateproductfind = await Ecommers.findOne({_id:_id}) 
+
+     res.json({
+       
+     data:updateproductfind
+    })
+})
+
+// patch
+
+app.patch('/productpatch/:_id' , async(req,res)=>{
+ const {_id} = req.params  
+ const {name,description, price, brand, productimg} = req.body
+ 
+const productpatch = await Ecommers.findOne({_id:_id});
+if(name){
+    productpatch.name = name
+}
+if(description){
+    productpatch.description = description
+}
+if(price) {
+    productpatch.price = price
+}
+
+if(brand){
+    productpatch.brand = brand
+}
+
+if(productimg){
+    productpatch.productimg = productimg
+}
+
+const saved = await productpatch.save();
+res.json({
+    data:saved
+})
+
+
 
 })
+
 app.listen(PORT, () => {
     console.log("server  is runnig ")
 })
